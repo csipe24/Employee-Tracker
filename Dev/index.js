@@ -51,10 +51,10 @@ function addRole(){
 
 function addEmployee(){
    getRoles((roles) => {
-   getEmployees((employees) =>{       
+   getEmployees((employees) => {       
     const employeeSelection = employees.map( employee => {
     return{
-        name: employee.first + " "+employee.last_name,
+        name: employee.first_name +" "+employee.last_name,
         value: employee.id
     };
     })
@@ -72,7 +72,7 @@ function addEmployee(){
                 name: "last_name"
             },
             {
-                message: "Which role ",
+                message: "Which role does the employee have? ",
                 type: "list",
                 name: "role_id",
                 choices: roles.map( role => {
@@ -83,21 +83,26 @@ function addEmployee(){
                 })
             },
             {
-                message: "Manager ",
+                message: "Select Manager",
                 type: "list",
                 name: "manager_id",
                 choices: employeeSelection
             }
         ]).then((response) => {
-           console.log(response)
+           connection.query("INSERT INTO employee SET ?", response, (err, result) => {
+            if(err) throw err;
+        console.log("Inserted as ID"+ result.insertId);
+        console.log(response);
             });
-    })
-});
+            })
+         })
+    });
+};
 
 function getRoles(cb){
     connection.query("SELECT * FROM role", (err, results) => {
         if (err) throw err;
-        cb(roles)
+        cb(results)
 });
 };
 
@@ -105,26 +110,31 @@ function getEmployees(cb){
     connection.query("SELECT * FROM employee", (err, results) => {
         if (err) throw err;
         cb(results);
-});
+}); 
 };
-};
-
-
-
 
 
 //   * View departments, roles, employees
 function viewDepartment(){
+
 };
-function viewRole(){  
+
+function viewRoles(){  
+    getRoles((roles) => {
+        console.table(roles)
+    });
 };
 
 
-function viewEmployee(){
+function viewEmployees(){
+    getEmployees((employees) => {
+        console.table(employees)
+    });
 };
 
 
 function updateDepartment(){
+
 };
 
 
