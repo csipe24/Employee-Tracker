@@ -1,7 +1,6 @@
-const connection = require("./db/connection.js");
+const connection = require("./db/connection");
 const inquirer = require("inquirer");
 
-//   * Add departments, roles, employees
 function addDepartment(){
     inquirer.prompt([
         {
@@ -10,50 +9,57 @@ function addDepartment(){
             name: "addDepartment"
         }
     ]).then((response) => {
-        connection.query("INSERT INTO department (name) VALUES (?)", response.departmentName, (err, result) => {
+        connection.query("INSERT INTO department (name) VALUES (?)", response.addDepartment, (err, result) => {
             if(err) throw err;
-        });
         console.log("Inserted as ID"+ result.insertId);
         console.log(response);
-});
-};
+            });
+        });
+    };
 
 function addRole(){
     connection.query("SELECT * FROM department", (err, results) => {
         if(err) throw err;
     inquirer.prompt([
         {
-            message: "What is the role Title?",
+            message: "What is the role title?",
             type: "input",
-            name: "addRollTitle"
+            name: "title"
         },
         {
-            message: "What is the role Salary?",
+            message: "What is the role salary?",
             type: "input",
-            name: "addRollSalary",
+            name: "salary",
             validate: (value) => {return !isNaN(value) ? true : "Please provide a number";}
         },
         {
             message: "What department is the role in?",
-            type: "input",
-            name: "addRollID",
+            type: "list",
+            name: "department_id",
             choices: results.map(department => {
                 return {name: department.name, value: department.id};
             })
         }
     ]).then((response) => {
-        connection.query("INSERT INTO role (title, salary, department_id) SET (?)", response, (err, result) => {
+        connection.query("INSERT INTO role SET ?", response, (err, result) => {
             if(err) throw err;
-        });
         console.log("Inserted as ID"+ result.insertId);
         console.log(response);
-    });
-    })
-    };
+                });
+             });
+    })};
 
 function addEmployee(){
-    connection.query("SELECT * FROM role", (err, results) => {
-        if(err) throw err;
+   getRoles((roles) => {
+   getEmployees((employees) =>{       
+    const employeeSelection = employees.map( employee => {
+    return{
+        name: employee.first + " "+employee.last_name,
+        value: employee.id
+    };
+    })
+    employeeSelection.unshift({name: "None", value: null});
+
         inquirer.prompt([
             {
                 message: "What is the employee's first name?",
@@ -69,56 +75,68 @@ function addEmployee(){
                 message: "Which role ",
                 type: "list",
                 name: "role_id",
-                choices: results.map( role => {
+                choices: roles.map( role => {
                     return{
                         name: role.title,
                         value: role.id
                     };
                 })
             },
-            // {
-            //     // message: "Which manager ",
-            //     // type: "input",
-            //     // name: "department"
-            // }
+            {
+                message: "Manager ",
+                type: "list",
+                name: "manager_id",
+                choices: employeeSelection
+            }
         ]).then((response) => {
-            connection.query("INSERT INTO role (title, salary, department_id) SET (?)", response, (err, result) => {
-                if(err) throw err;
+           console.log(response)
             });
     })
 });
+
+function getRoles(cb){
+    connection.query("SELECT * FROM role", (err, results) => {
+        if (err) throw err;
+        cb(roles)
+});
+};
+
+function getEmployees(cb){
+    connection.query("SELECT * FROM employee", (err, results) => {
+        if (err) throw err;
+        cb(results);
+});
+};
 };
 
 
-addEmployee();
-
-// //   * View departments, roles, employees
-
-// function viewDepartment(){
-// };
 
 
-// function viewRole(){
+
+//   * View departments, roles, employees
+function viewDepartment(){
+};
+function viewRole(){  
+};
+
+
+function viewEmployee(){
+};
+
+
+function updateDepartment(){
+};
+
+
+function updateRoll(){
     
-// };
+};
 
 
-// function viewEmployee(){
+
+
+
+// Update Employee Roles
+function updateEmployee(){
     
-// };
-// //   * Update employee roles
-
-// function updateDepartment(){
-// };
-
-
-// function updateRoll(){
-    
-// };
-
-
-// function updateEmployee(){
-    
-// };
-
-// addRole();
+};
