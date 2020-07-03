@@ -3,14 +3,15 @@ Employee Tracker
 
 # Unit 12 MySQL Homework: Employee Tracker
 
-Developers are often tasked with creating interfaces that make it easy for non-developers to view and interact with information stored in databases. Often these interfaces are known as **C**ontent **M**anagement **S**ystems. In this homework assignment, your challenge is to architect and build a solution for managing a company's employees using node, inquirer, and MySQL.
+## Description
+Welcome to the node employee tracker application! This node CLI app can be used to create, update and view employee information. This is simple terminal application to help manage employee information and keep them organized! 
 
-## Instructions
+# Usage
+Use this application for hassle free way to view employees, role and departments, add employees, roles and departments and update all the information! This application uses several packages including mysql and inquirer!
 
-Design the following database schema containing three tables:
 
-![Database Schema](Assets/schema.png)
+Built With
+Microsoft Visual Studio Code
 
-* The URL of the GitHub repository
-
-* A video demonstrating the entirety of the app's functionality 
+# Authors/Contributors
+Christopher Sipe - UW Coding Bootcamp Student

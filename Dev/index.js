@@ -20,8 +20,8 @@ function runApp(){
             "View Roles",
             "View Employees",
             "Update a Department",
-            "Update a Roles",
-            "Update an Employees",
+            "Update a Role",
+            "Update an Employee",
             "Stop Application"
         ]
     })
@@ -55,11 +55,11 @@ function runApp(){
                 updateDepartment();
             break;
 
-            case "Update a Roles":
+            case "Update a Role":
                 updateRole();
             break;
 
-            case "Update an Employees":
+            case "Update an Employee":
                 updateEmployee();
             break;
 
@@ -251,9 +251,10 @@ function updateDepartment(){
 function updateRole(){
     console.log("Updating Roles");
     getRoles(roles => {
+        console.log(roles);
     const rolesSelection = roles.map( role => {
         return{
-                title: role.title,
+                name: role.title,
                 value: role.id
             };
         });
@@ -267,18 +268,24 @@ function updateRole(){
             {
                 message: "What would you like to update role title to?",
                 type: "input",
-                name: "roleTitle",
+                name: "title"
             },
             {
                 message: "What would you like to update role salary to?",
-                type: "input",
-                name: "roleSal",
+                type: "number",
+                name: "salary"
             }
         ]).then((response) => {
-            connection.query("UPDATE role SET title = ? SET salary = ? WHERE id = ?", [response.roleTitle, response.roleSal, response.roles], (err, result) => {
-             if(err) throw err;
+            console.log(response);
+            connection.query("UPDATE role SET title = ? WHERE id = ?;", [response.title, response.roles], (err, result) => {
+                console.log(response);
+                if(err) throw err;
          console.log("Inserted as ID"+ result.insertId);
-         console.log(response);
+            });
+            connection.query("UPDATE role SET salary = ? WHERE id = ?;", [response.salary, response.roles], (err, result) => {
+                console.log(response);
+                if(err) throw err;
+         console.log("Inserted as ID"+ result.insertId);
             });
         runApp();
         });
@@ -287,7 +294,66 @@ function updateRole(){
 
 
 function updateEmployee(){
-    // "UPDATE auctions SET ? WHERE ?",
-    runApp();
-};
+   console.log("Updating Employee");
+    getRoles((roles) => {
+    getEmployees(employees => {
+    const employeeSelection = employees.map( employee => {
+        return{
+            name: employee.first_name +" "+employee.last_name,
+            value: employee.id
+            };
+        });
+    inquirer.prompt([
+            {
+                message: "Which employee would you like to update?",
+                type: "list",
+                name: "employee",
+                choices: employeeSelection
+            },
+            {
+                message: "What would you like to update employee first name to?",
+                type: "input",
+                name: "first"
+            },
+            {
+                message: "What would you like to update employee last name to?",
+                type: "input",
+                name: "last"
+            },
+            {
+                message: "Which role does the employee have? ",
+                type: "list",
+                name: "role_id",
+                choices: roles.map( role => {
+                    return{
+                        name: role.title,
+                        value: role.id
+                    };
+                })
+            },
+            
+        ]).then((response) => {
+            console.log(response);
 
+            connection.query("UPDATE employee SET first_name = ? WHERE id = ?;", [response.first, response.employee], (err, result) => {
+                console.log(response);
+                if(err) throw err;
+         console.log("Inserted as ID"+ result.insertId);
+            });
+
+            connection.query("UPDATE employee SET last_name = ? WHERE id = ?;", [response.last, response.employees], (err, result) => {
+                console.log(response);
+                if(err) throw err;
+         console.log("Inserted as ID"+ result.insertId);
+            });
+
+            connection.query("UPDATE employee SET role_id = ? WHERE id = ?;", [response.role_id, response.role_id], (err, result) => {
+                console.log(response);
+                if(err) throw err;
+         console.log("Inserted as ID"+ result.insertId);
+            });
+        runApp();
+        });
+    })
+})
+};
