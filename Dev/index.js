@@ -19,7 +19,7 @@ function runApp(){
             "View Departments",
             "View Roles",
             "View Employees",
-            "Update a Departments",
+            "Update a Department",
             "Update a Roles",
             "Update an Employees",
             "Stop Application"
@@ -51,7 +51,7 @@ function runApp(){
                 viewEmployees();
             break;
 
-            case "Update a Departments":
+            case "Update a Department":
                 updateDepartment();
             break;
 
@@ -171,6 +171,13 @@ function addEmployee(){
     });
 };
 
+function getDepartments(cb){
+    connection.query("SELECT * FROM department", (err, results) => {
+        if (err) throw err;
+        cb(results);
+});
+};
+
 function getRoles(cb){
     connection.query("SELECT * FROM role", (err, results) => {
         if (err) throw err;
@@ -185,14 +192,12 @@ function getEmployees(cb){
 }); 
 };
 
-
 //   * View departments, roles, employees
 function viewDepartment(){
-    connection.query("SELECT * FROM department", (err, results) => {
-        if (err) throw err;
-        console.table(results);
+    getDepartments((departments) => {
+        console.table(departments);
         runApp();
-}); 
+    });
 };
 
 function viewRoles(){  
@@ -209,15 +214,75 @@ function viewEmployees(){
     });
 };
 
+
 function updateDepartment(){
-    // "UPDATE auctions SET ? WHERE ?",
-    runApp();
+    console.log("Updating Departments");
+    getDepartments(departments => {
+    const departmentSelection = departments.map( department => {
+        return{
+                name: department.name,
+                value: department.id
+            };
+        });
+    inquirer.prompt([
+            {
+                message: "Which department would you like to update?",
+                type: "list",
+                name: "departments",
+                choices: departmentSelection
+            },
+            {
+                message: "What would you like to update department name to?",
+                type: "input",
+                name: "updateDep",
+            }
+        ]).then((response) => {
+        console.log(response);
+            connection.query("UPDATE department SET name = ? WHERE id = ?", [response.updateDep, response.departments], (err, result) => {
+             if(err) throw err;
+         console.log("Inserted as ID"+ result.insertId);
+         console.log(response);
+            });
+        runApp();
+        });
+    })
 };
 
-
 function updateRole(){
-    // "UPDATE auctions SET ? WHERE ?",
-    runApp();
+    console.log("Updating Roles");
+    getRoles(roles => {
+    const rolesSelection = roles.map( role => {
+        return{
+                title: role.title,
+                value: role.id
+            };
+        });
+    inquirer.prompt([
+            {
+                message: "Which role would you like to update?",
+                type: "list",
+                name: "roles",
+                choices: rolesSelection
+            },
+            {
+                message: "What would you like to update role title to?",
+                type: "input",
+                name: "roleTitle",
+            },
+            {
+                message: "What would you like to update role salary to?",
+                type: "input",
+                name: "roleSal",
+            }
+        ]).then((response) => {
+            connection.query("UPDATE role SET title = ? SET salary = ? WHERE id = ?", [response.roleTitle, response.roleSal, response.roles], (err, result) => {
+             if(err) throw err;
+         console.log("Inserted as ID"+ result.insertId);
+         console.log(response);
+            });
+        runApp();
+        });
+    })
 };
 
 
