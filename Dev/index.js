@@ -1,6 +1,75 @@
 const connection = require("./db/connection");
 const inquirer = require("inquirer");
 
+connection.connect(function(err) {
+    if (err) throw err;
+    console.log("connected as " + connection.threadId + "\n");
+    runApp();
+  });
+
+function runApp(){
+    inquirer.prompt({
+        name:"action",
+        type:"list",
+        message: "What would you like to do?",
+        choices: [
+            "Add a Department",
+            "Add a Role",
+            "Add an Employee",
+            "View Departments",
+            "View Roles",
+            "View Employees",
+            "Update a Departments",
+            "Update a Roles",
+            "Update an Employees",
+            "Stop Application"
+        ]
+    })
+    .then(answer =>{
+        switch(answer.action){
+            case "Add a Department":
+                addDepartment();
+            break;
+
+            case "Add a Role":
+                addRole();
+            break;
+
+            case "Add an Employee":
+                addEmployee();
+            break;
+
+            case "View Departments":
+                viewDepartment();
+            break;
+
+            case "View Roles":
+                viewRoles();
+            break;
+
+            case "View Employees":
+                viewEmployees();
+            break;
+
+            case "Update a Departments":
+                updateDepartment();
+            break;
+
+            case "Update a Roles":
+                updateRole();
+            break;
+
+            case "Update an Employees":
+                updateEmployee();
+            break;
+
+            case "Stop Application":
+                  connection.end();
+            break;
+        }
+    });
+}
+
 function addDepartment(){
     inquirer.prompt([
         {
@@ -13,6 +82,7 @@ function addDepartment(){
             if(err) throw err;
         console.log("Inserted as ID"+ result.insertId);
         console.log(response);
+        runApp();
             });
         });
     };
@@ -45,6 +115,7 @@ function addRole(){
             if(err) throw err;
         console.log("Inserted as ID"+ result.insertId);
         console.log(response);
+        runApp();
                 });
              });
     })};
@@ -93,6 +164,7 @@ function addEmployee(){
             if(err) throw err;
         console.log("Inserted as ID"+ result.insertId);
         console.log(response);
+        runApp();
             });
             })
          })
@@ -102,7 +174,7 @@ function addEmployee(){
 function getRoles(cb){
     connection.query("SELECT * FROM role", (err, results) => {
         if (err) throw err;
-        cb(results)
+        cb(results);
 });
 };
 
@@ -116,37 +188,41 @@ function getEmployees(cb){
 
 //   * View departments, roles, employees
 function viewDepartment(){
-
+    connection.query("SELECT * FROM department", (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        runApp();
+}); 
 };
 
 function viewRoles(){  
     getRoles((roles) => {
-        console.table(roles)
+        console.table(roles);
+        runApp();
     });
 };
-
 
 function viewEmployees(){
     getEmployees((employees) => {
-        console.table(employees)
+        console.table(employees);
+        runApp();
     });
 };
 
-
 function updateDepartment(){
-
+    // "UPDATE auctions SET ? WHERE ?",
+    runApp();
 };
 
 
-function updateRoll(){
-    
+function updateRole(){
+    // "UPDATE auctions SET ? WHERE ?",
+    runApp();
 };
 
 
-
-
-
-// Update Employee Roles
 function updateEmployee(){
-    
+    // "UPDATE auctions SET ? WHERE ?",
+    runApp();
 };
+
